@@ -1,0 +1,29 @@
+version: "3"
+services:
+  nginx:
+    container_name: some-nginx
+    image: nginx:1.13
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - app
+
+  app:
+    restart: always
+    build: .
+    working_dir: /app
+    volumes:
+      - ./target:/app
+    expose:
+      - "8080"
+    command: mvn clean spring-boot:run
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: tutorial
+        awslogs-region: ap-south-1
+        awslogs-stream-prefix: web
